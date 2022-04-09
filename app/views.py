@@ -1,13 +1,31 @@
+import imp
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.forms import UserCreationForm
-from .forms import RegisterUserForm
+from .forms import RegisterUserForm, TodoForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from app.models import Todo
+from django.contrib.auth.decorators import login_required
 
-
+@login_required(login_url='login/')
 def index(request):
-    return render(request, 'index.html')
+    form = TodoForm()
+    todos = Todo.objects.filter(user = request.user).order_by('priority')
+    print(todos)
+    if request.method == 'POST':
+        form = TodoForm(request.POST)
+        if form.is_valid():
+            form.instance.user = request.user
+            form.save()
+            print(form.cleaned_data)
+            messages.success(request, 'Task Added !')
+            return redirect('home')
+        else:
+            messages.info(request, 'Something Went Wrong !')
+            return redirect('home')
+    context = {'form':form, 'todos':todos}
+    return render(request, 'index.html', context=context)
 
 def loginUser(request):
     if request.method == 'POST':
@@ -45,3 +63,8 @@ def register(request):
         'form' : form,
     }
     return render(request, 'register.html', context=context)
+
+
+def deleteTodo(request, id):
+    Todo.objects.get(id = id).delete()
+    return redirect('home')
