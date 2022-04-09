@@ -1,2 +1,10 @@
 {% extends 'main.html' %}
 {% block title %}home{% endblock %}
+{% block content %}
+
+{% for msg in messages %}
+    <p>{{msg}}</p>
+{% endfor %}
+
+{% endblock content %}
+
