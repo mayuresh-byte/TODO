@@ -2,7 +2,7 @@ import imp
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.forms import UserCreationForm
-from .forms import RegisterUserForm, TodoForm
+from .forms import RegisterUserForm, TodoForm, EditForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from app.models import Todo
@@ -68,3 +68,14 @@ def register(request):
 def deleteTodo(request, id):
     Todo.objects.get(id = id).delete()
     return redirect('home')
+
+def editTodo(request, id):
+    obj = Todo.objects.get(id = id)
+    if(request.method == 'POST'):
+        title = request.POST.get('title')
+        obj.title = title
+        obj.save()
+        return redirect('home')
+
+    return render(request, 'edit.html')
+    

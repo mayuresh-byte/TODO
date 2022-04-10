@@ -17,3 +17,8 @@ class TodoForm(ModelForm):
     class Meta:
         model = Todo
         fields = ['title', 'status', 'priority']
+
+class EditForm(ModelForm):
+    class Meta:
+        model = Todo
+        fields = ['title']
